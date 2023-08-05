@@ -97,8 +97,8 @@ class PostView(ModelViewSet):
 class LikeView(ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     serializer_class = Like_serializers
-    # queryset= Like.objects.all()
-    lookup_field = "id"
+    queryset= Like.objects.all()
+    lookup_field = "post_id"
 
     def list(self, request, *args, **kwargs):
         dict = {}
@@ -111,7 +111,7 @@ class LikeView(ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         
-        user = self.request.user
+        user = self.request.user.id
         post = request.data['post']
 
         obj = Like.objects.create(user = user, post_id = post)
@@ -121,8 +121,8 @@ class LikeView(ModelViewSet):
     
     def destroy(self, request, *args, **kwargs):
         postid =  self.kwargs['post_id']
-        if Like.objects.filter(post_id = postid,user_id = self.request.user):
-            obj = Like.objects.get(post_id = postid,user_id = self.request.user).delete()
+        if Like.objects.filter(post = postid, user_id = self.request.user.id):
+            obj = Like.objects.get(post = postid, user_id = self.request.user.id).delete()
             return Response({"message": "dislike post"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "already dislike"}, status=status.HTTP_400_BAD_REQUEST)
